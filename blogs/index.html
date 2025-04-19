@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Blog | Rhythm</title>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+        nav {
+            background-color: #1a1a1a;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ffcc;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 1.5rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li a {
+            color: #00ffcc;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: white;
+        }
+
+        nav ul li a:visited {
+            color: #00ffcc;
+        }
+
+        header {
+            text-align: center;
+            padding: 3rem 1rem 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #bbbbbb;
+        }
+
+        .blog-list {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .blog-card {
+            background-color: #1e1e1e;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 12px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.1);
+            display: block;
+            /* Make the whole card clickable */
+        }
+
+        .blog-card:hover {
+            background-color: #292929;
+            transform: translateY(-4px);
+        }
+
+        .blog-card a {
+            color: #00ffcc;
+            text-decoration: none;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .blog-card a:hover {
+            color: white;
+        }
+
+        .blog-card a:visited {
+            color: #00ffcc;
+        }
+
+        .blog-desc {
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+            color: #aaaaaa;
+            font-weight: normal;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">404budhha</div>
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../projects/">Projects</a></li>
+            <li><a href="../certs/">Certificates</a></li>
+            <li><a href="../contact/">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Blog Header -->
+    <header>
+        <h1>Welcome to My Blog</h1>
+        <p>Sharing thoughts, hacks, and walkthroughs from my learning journey.</p>
+    </header>
+
+
+
+    <!-- Blog Cards -->
+    <div class="blog-list" id="blog">
+        <div class="blog-card">
+            <a href="https://medium.com/system-weakness/portswigger-labs-path-traversal-walkthrough-878144c3643d"
+                target="_blank" rel="noopener noreferrer">
+                Path Traversal
+
+                <p class="blog-desc">A beginner-friendly walkthrough explaining how Path Traversal works using Labs
+                    provided
+                    by Portswigger</p>
+            </a>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

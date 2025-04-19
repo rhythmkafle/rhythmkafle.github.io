@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact | Rhythm</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            background-color: #1a1a1a;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        nav .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ffcc;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        nav ul li a {
+            color: #00ffcc;
+            text-decoration: none;
+        }
+
+        nav ul li a:hover {
+            color: white;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 2rem;
+        }
+
+        h1 {
+            text-align: center;
+            color: #00ffcc;
+            margin-bottom: 2rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .social-links a {
+            color: #00ffcc;
+            text-decoration: none;
+            font-size: 1.1rem;
+        }
+
+        .social-links a:hover {
+            color: white;
+        }
+
+        form {
+            background-color: #1e1e1e;
+            padding: 2rem;
+            padding-right: 4rem;
+            border-radius: 8px;
+            box-shadow: 0 0 8px rgba(0, 255, 204, 0.1);
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        form input,
+        form textarea {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1.2rem;
+            background-color: #292929;
+            border: none;
+            border-radius: 5px;
+            color: #e0e0e0;
+        }
+
+        form button {
+            background-color: #00ffcc;
+            color: #121212;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            padding: 0.8rem 2rem;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: white;
+            color: #121212;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">404budhha</div>
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../blogs/">Blogs</a></li>
+            <li><a href="../projects/">Projects</a></li>
+            <li><a href="../certs/">Certificates</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h1>Let's Connect</h1>
+
+        <div class="social-links">
+            <a href="https://linkedin.com/in/yourusername" target="_blank">LinkedIn</a>
+            <a href="https://github.com/yourusername" target="_blank">GitHub</a>
+            <a href="https://medium.com/@yourusername" target="_blank">Medium</a>
+            <a href="mailto:404budhha@proton.me">Email Me</a>
+        </div>
+
+        <form id="contact-form" action="https://formspree.io/f/mwplgpnd" method="POST" novalidate>
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name" required minlength="2" maxlength="50" pattern="[a-zA-Z\s]+" />
+
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" required />
+
+            <label for="message">Message</label>
+            <textarea name="message" id="message" rows="6" required minlength="5" maxlength="1000"></textarea>
+
+            <button type="submit">Send Message</button>
+        </form>
+    </main>
+
+    <script>
+        // Basic XSS prevention (client-side)
+        const form = document.getElementById("contact-form");
+        form.addEventListener("submit", function (e) {
+            const name = form.name.value;
+            const email = form.email.value;
+            const message = form.message.value;
+
+            const xssPattern = /<script.*?>.*?<\/script>|<.*?on\w+=.*?>/gi;
+
+            if (xssPattern.test(name) || xssPattern.test(message)) {
+                alert("Potential XSS detected. Please remove any suspicious code.");
+                e.preventDefault();
+                return;
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Projects | Rhythm</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+        a {
+            color: #00ffcc;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: white;
+        }
+
+        a:visited {
+            color: #00ffcc;
+        }
+
+        nav {
+            background-color: #1a1a1a;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ffcc;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        nav ul li a {
+            font-size: 1rem;
+            color: #00ffcc;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: white;
+        }
+
+        nav ul li a:visited {
+            color: #00ffcc;
+        }
+
+        header {
+            text-align: center;
+            padding: 3rem 1rem 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #bbbbbb;
+        }
+
+        .blog-list {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .blog-card {
+            background-color: #1e1e1e;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 12px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.1);
+            display: block;
+        }
+
+        .blog-card:hover {
+            background-color: #292929;
+            transform: translateY(-4px);
+        }
+
+        .blog-card a {
+            display: block;
+            color: inherit;
+            height: 100%;
+        }
+
+        .blog-card a:hover {
+            color: white;
+        }
+
+        .blog-desc {
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+            color: #aaaaaa;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">404budhha</div>
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../blogs/">Blogs</a></li>
+            <li><a href="../certs/">Certifaces</a></li>
+            <li><a href="../contact/">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Header -->
+    <header>
+        <h1>My Projects</h1>
+        <p>Things I've built, broken, or learned from. Security-focused & hands-on.</p>
+    </header>
+
+    <!-- Projects List -->
+    <div class="blog-list">
+
+
+        <div class="blog-card">
+            <a href="https://github.com/backrankcheckmate/Toralizer" target="_blank" rel="noopener noreferrer">
+                <h3>Toralizer</h3>
+                <p class="blog-desc">A tool that transforms Linux Commands into a TOR network client, and ensures that
+                    your activities are anonymous and secure.</p>
+            </a>
+        </div>
+
+        <div class="blog-card">
+            <a href="https://github.com/backrankcheckmate/CyberSecurity-Projects/tree/main/PortScanner" target="_blank"
+                rel="noopener noreferrer">
+                <h3>Port Scanner in Python</h3>
+                <p class="blog-desc">A simple port scanner. Made with Python.</p>
+            </a>
+        </div>
+
+        <div class="blog-card">
+            <a href="https://backrankcheckmate.github.io/" target="_blank" rel="noopener noreferrer">
+                <h3>CLI Portfolio Website</h3>
+                <p class="blog-desc">Portfolio Site for Command Line Geeks.</p>
+            </a>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
