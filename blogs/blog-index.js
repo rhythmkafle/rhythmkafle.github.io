@@ -16,27 +16,15 @@
     const title = post.title || post.slug || post.file || "Untitled";
     const slug = post.slug || "";
     const file = post.file || (slug ? `${slug}/${slug}.md` : "");
+    const description = (post.description || "Read this blog post.").trim();
     return {
       title,
       slug,
       file,
-      description: "Read this blog post.",
-      href: `./${encodeURIComponent(slug)}/`
+      description,
+      href: `./${encodeURIComponent(slug)}/`,
+      searchKey: `${title} ${slug} ${description}`.toLowerCase()
     };
-  }
-
-  function extractDescription(md) {
-    const lines = md.replace(/\r\n/g, "\n").split("\n");
-    for (const raw of lines) {
-      const line = raw.trim();
-      if (!line) continue;
-      if (/^#/.test(line)) continue;
-      if (/^```/.test(line)) continue;
-      if (/^[-*]\s+/.test(line)) continue;
-      if (/^\d+\.\s+/.test(line)) continue;
-      return line.replace(/[*_`>#-]/g, "").trim();
-    }
-    return "Read this blog post.";
   }
 
   function render(posts) {
@@ -82,30 +70,21 @@
         return;
       }
 
-      await Promise.all(
-        posts.map(async (post) => {
-          try {
-            const postRes = await fetch(post.file, { cache: "no-store" });
-            if (!postRes.ok) return;
-            const md = await postRes.text();
-            post.description = extractDescription(md);
-          } catch (e) {
-            post.description = "Read this blog post.";
-          }
-        })
-      );
-
       render(posts);
 
       if (searchEl) {
+        let timer = null;
         searchEl.addEventListener("input", function () {
+          if (timer) clearTimeout(timer);
+          timer = setTimeout(function () {
           const term = searchEl.value.trim().toLowerCase();
           if (!term) {
             render(posts);
             return;
           }
-          const filtered = posts.filter((post) => post.title.toLowerCase().includes(term) || post.slug.toLowerCase().includes(term));
+          const filtered = posts.filter((post) => post.searchKey.includes(term));
           render(filtered);
+          }, 120);
         });
       }
     } catch (err) {

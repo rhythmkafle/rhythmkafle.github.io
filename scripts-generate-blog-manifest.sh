@@ -72,6 +72,29 @@ write_post_page() {
 HTML
 }
 
+extract_description() {
+  local path="$1"
+  local line trimmed cleaned
+  while IFS= read -r line; do
+    trimmed="$(printf '%s' "$line" | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')"
+    [[ -z "$trimmed" ]] && continue
+    [[ "$trimmed" == \#* ]] && continue
+    [[ "$trimmed" == '```'* ]] && continue
+    [[ "$trimmed" =~ ^[-*][[:space:]]+ ]] && continue
+    [[ "$trimmed" =~ ^[0-9]+\.[[:space:]]+ ]] && continue
+    cleaned="$trimmed"
+    cleaned="${cleaned//\*/}"
+    cleaned="${cleaned//_/}"
+    cleaned="${cleaned//\`/}"
+    cleaned="${cleaned//>/}"
+    cleaned="${cleaned//#/}"
+    cleaned="${cleaned//-/}"
+    printf '%s' "$cleaned"
+    return
+  done < "$path"
+  printf '%s' "Read this blog post."
+}
+
 # Step 1: move any root-level markdown files into slug folders.
 shopt -s nullglob
 root_md=("$BLOG_DIR"/*.md)
@@ -100,6 +123,7 @@ for path in "${folder_md[@]}"; do
   file_name="$(basename "$path")"
   file_rel="$slug/$file_name"
   title=""
+  description=""
 
   while IFS= read -r line; do
     if [[ "$line" =~ ^#\  ]]; then
@@ -111,9 +135,12 @@ for path in "${folder_md[@]}"; do
   if [[ -z "$title" ]]; then
     title="${slug//-/ }"
   fi
+  description="$(extract_description "$path")"
 
   esc_title="${title//\\/\\\\}"
   esc_title="${esc_title//\"/\\\"}"
+  esc_description="${description//\\/\\\\}"
+  esc_description="${esc_description//\"/\\\"}"
 
   if [[ $first -eq 0 ]]; then
     printf ',\n' >> "$MANIFEST"
@@ -121,7 +148,7 @@ for path in "${folder_md[@]}"; do
   first=0
   count=$((count + 1))
 
-  printf '    {\n      "title": "%s",\n      "file": "%s",\n      "slug": "%s"\n    }' "$esc_title" "$file_rel" "$slug" >> "$MANIFEST"
+  printf '    {\n      "title": "%s",\n      "description": "%s",\n      "file": "%s",\n      "slug": "%s"\n    }' "$esc_title" "$esc_description" "$file_rel" "$slug" >> "$MANIFEST"
 
   write_post_page "$slug"
 done

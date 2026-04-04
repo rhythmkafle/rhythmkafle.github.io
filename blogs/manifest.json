@@ -2,11 +2,13 @@
   "posts": [
     {
       "title": "I hope this works",
+      "description": "Read this blog post.",
       "file": "idk/idk.md",
       "slug": "idk"
     },
     {
       "title": "Test Blog",
+      "description": "This is used as a placeholder for now. I dont have any blogs rn hehehe",
       "file": "test/test.md",
       "slug": "test"
     }
