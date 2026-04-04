@@ -1,0 +1,14 @@
+{
+  "posts": [
+    {
+      "title": "I hope this works",
+      "file": "idk/idk.md",
+      "slug": "idk"
+    },
+    {
+      "title": "Test Blog",
+      "file": "test/test.md",
+      "slug": "test"
+    }
+  ]
+}

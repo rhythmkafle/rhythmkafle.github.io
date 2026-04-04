@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Cybersecurity blog and markdown notes" />
+  <title>Blog | Buddha404</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <div class="bg-icons" aria-hidden="true"></div>
+  <header class="site-header">
+    <nav class="nav container">
+      <a href="../index.html" class="logo">Buddha404</a>
+      <div class="nav-links">
+        <a href="../sections/about.html">About</a>
+        <a href="../sections/projects.html">Projects</a>
+        <a href="../sections/certifications.html">Certifications</a>
+        <a href="../sections/contact.html">Contact</a>
+        <a href="index.html">Blog</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container section page-content blog-layout">
+    <aside class="card blog-list">
+      <h2>Posts</h2>
+      <input id="postSearch" class="post-search" type="search" placeholder="Search posts..." aria-label="Search blog posts" />
+      <div id="postList"></div>
+    </aside>
+
+    <section class="blog-articles">
+      <h1 class="blog-articles-title">Blogs & Articles</h1>
+      <article class="card prose markdown-viewer">
+        <div id="articleList"></div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="site-footer container">
+    <p>© <span id="year"></span> Buddha404.</p>
+  </footer>
+
+  <script src="../index.js"></script>
+  <script src="blog-index.js"></script>
+</body>
+</html>
