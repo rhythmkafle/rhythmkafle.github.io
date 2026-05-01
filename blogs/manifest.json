@@ -1,16 +1,10 @@
 {
   "posts": [
     {
-      "title": "I hope this works",
-      "description": "Read this blog post.",
-      "file": "idk/idk.md",
-      "slug": "idk"
-    },
-    {
-      "title": "Test Blog",
-      "description": "This is used as a placeholder for now. I dont have any blogs rn hehehe",
-      "file": "test/test.md",
-      "slug": "test"
+      "title": "How does Windows Authentication actually work?",
+      "description": "Every time we log into a Windows machine, or access a shared folder on the network, Windows runs an authentication process behind the scenes. It happens in milliseconds, and understanding it is the foundation of almost every AD attack.",
+      "file": "how-does-windows-authentication-actually-work/how-does-windows-authentication-actually-work.md",
+      "slug": "how-does-windows-authentication-actually-work"
     }
   ]
 }

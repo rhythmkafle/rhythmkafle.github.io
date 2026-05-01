@@ -16,7 +16,10 @@
     return safe
       .replace(/`([^`]+)`/g, "<code>$1</code>")
       .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/__([^_]+)__/g, "<strong>$1</strong>")
+      .replace(/\*\*\*([^*]+)\*\*\*/g, "<strong><em>$1</em></strong>")
       .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+      .replace(/_([^_]+)_/g, "<em>$1</em>")
       .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, label, href) => {
         const url = href.trim();
         if (!/^(https?:\/\/|mailto:|\/)/i.test(url)) {
@@ -26,31 +29,74 @@
       });
   }
 
+  function resolveImagePath(src) {
+    const cleaned = src.trim().replace(/^<|>$/g, "");
+    if (!cleaned) return "";
+    if (/^(https?:\/\/|\/)/i.test(cleaned)) return cleaned;
+    return cleaned;
+  }
+
+  function parseImageLine(line) {
+    const obsidian = line.match(/^!\[\[([^\]]+)\]\]$/);
+    if (obsidian) {
+      const url = resolveImagePath(obsidian[1]);
+      if (!url) return "";
+      return `<p><img src="${escapeHtml(url)}" alt="" loading="lazy" /></p>`;
+    }
+    const markdown = line.match(/^!\[([^\]]*)\]\((.+)\)$/);
+    if (markdown) {
+      const alt = markdown[1] || "";
+      const url = resolveImagePath(markdown[2]);
+      if (!url) return "";
+      return `<p><img src="${escapeHtml(url)}" alt="${escapeHtml(alt)}" loading="lazy" /></p>`;
+    }
+    return "";
+  }
+
   function markdownToHtml(md) {
     const lines = md.replace(/\r\n/g, "\n").split("\n");
     let html = "";
     let inList = false;
     let inOrderedList = false;
     let inCode = false;
+    let inBlockquote = false;
+    let paragraph = [];
+
+    function closeParagraph() {
+      if (paragraph.length > 0) {
+        html += `<p>${parseInline(paragraph.join(" "))}</p>`;
+        paragraph = [];
+      }
+    }
+
+    function closeListsAndQuote() {
+      closeParagraph();
+      if (inList) {
+        html += "</ul>";
+        inList = false;
+      }
+      if (inOrderedList) {
+        html += "</ol>";
+        inOrderedList = false;
+      }
+      if (inBlockquote) {
+        html += "</blockquote>";
+        inBlockquote = false;
+      }
+    }
 
     for (const rawLine of lines) {
       const line = rawLine.trimEnd();
+      const trimmed = line.trim();
 
-      if (line.startsWith("```") && !inCode) {
+      if (trimmed.startsWith("```") && !inCode) {
+        closeListsAndQuote();
         inCode = true;
-        if (inList) {
-          html += "</ul>";
-          inList = false;
-        }
-        if (inOrderedList) {
-          html += "</ol>";
-          inOrderedList = false;
-        }
         html += "<pre><code>";
         continue;
       }
 
-      if (line.startsWith("```") && inCode) {
+      if (trimmed.startsWith("```") && inCode) {
         inCode = false;
         html += "</code></pre>";
         continue;
@@ -61,37 +107,30 @@
         continue;
       }
 
-      if (/^###\s+/.test(line)) {
-        if (inList) {
-          html += "</ul>";
-          inList = false;
+      if (/^---+$/.test(trimmed)) {
+        closeListsAndQuote();
+        html += "<hr />";
+      } else if (/^###\s+/.test(trimmed)) {
+        closeListsAndQuote();
+        html += `<h3>${parseInline(trimmed.replace(/^###\s+/, ""))}</h3>`;
+      } else if (/^##\s+/.test(trimmed)) {
+        closeListsAndQuote();
+        html += `<h2>${parseInline(trimmed.replace(/^##\s+/, ""))}</h2>`;
+      } else if (/^#\s+/.test(trimmed)) {
+        closeListsAndQuote();
+        html += `<h1>${parseInline(trimmed.replace(/^#\s+/, ""))}</h1>`;
+      } else if (/^>\s?/.test(trimmed)) {
+        closeParagraph();
+        if (!inBlockquote) {
+          html += "<blockquote>";
+          inBlockquote = true;
         }
-        if (inOrderedList) {
-          html += "</ol>";
-          inOrderedList = false;
-        }
-        html += `<h3>${parseInline(line.replace(/^###\s+/, ""))}</h3>`;
-      } else if (/^##\s+/.test(line)) {
-        if (inList) {
-          html += "</ul>";
-          inList = false;
-        }
-        if (inOrderedList) {
-          html += "</ol>";
-          inOrderedList = false;
-        }
-        html += `<h2>${parseInline(line.replace(/^##\s+/, ""))}</h2>`;
-      } else if (/^#\s+/.test(line)) {
-        if (inList) {
-          html += "</ul>";
-          inList = false;
-        }
-        if (inOrderedList) {
-          html += "</ol>";
-          inOrderedList = false;
-        }
-        html += `<h1>${parseInline(line.replace(/^#\s+/, ""))}</h1>`;
-      } else if (/^-\s+/.test(line)) {
+        html += `<p>${parseInline(trimmed.replace(/^>\s?/, ""))}</p>`;
+      } else if (parseImageLine(trimmed)) {
+        closeListsAndQuote();
+        html += parseImageLine(trimmed);
+      } else if (/^-\s+/.test(trimmed)) {
+        closeParagraph();
         if (inOrderedList) {
           html += "</ol>";
           inOrderedList = false;
@@ -100,8 +139,9 @@
           html += "<ul>";
           inList = true;
         }
-        html += `<li>${parseInline(line.replace(/^-\s+/, ""))}</li>`;
-      } else if (/^\d+\.\s+/.test(line)) {
+        html += `<li>${parseInline(trimmed.replace(/^-\s+/, ""))}</li>`;
+      } else if (/^\d+\.\s+/.test(trimmed)) {
+        closeParagraph();
         if (inList) {
           html += "</ul>";
           inList = false;
@@ -110,31 +150,18 @@
           html += "<ol>";
           inOrderedList = true;
         }
-        html += `<li>${parseInline(line.replace(/^\d+\.\s+/, ""))}</li>`;
-      } else if (line === "") {
-        if (inList) {
-          html += "</ul>";
-          inList = false;
-        }
-        if (inOrderedList) {
-          html += "</ol>";
-          inOrderedList = false;
-        }
+        html += `<li>${parseInline(trimmed.replace(/^\d+\.\s+/, ""))}</li>`;
+      } else if (trimmed === "") {
+        closeListsAndQuote();
       } else {
-        if (inList) {
-          html += "</ul>";
-          inList = false;
+        if (inList || inOrderedList) {
+          closeListsAndQuote();
         }
-        if (inOrderedList) {
-          html += "</ol>";
-          inOrderedList = false;
-        }
-        html += `<p>${parseInline(line)}</p>`;
+        paragraph.push(trimmed);
       }
     }
 
-    if (inList) html += "</ul>";
-    if (inOrderedList) html += "</ol>";
+    closeListsAndQuote();
     if (inCode) html += "</code></pre>";
 
     return html;
@@ -163,7 +190,8 @@
       const post = posts.find((p) => p.slug === slug);
       if (!post) throw new Error("Post not found.");
 
-      if (titleEl) titleEl.textContent = `${post.title} | Buddha404`;
+      document.title = `${post.title} | Buddha404`;
+      if (titleEl) titleEl.textContent = document.title;
 
       const filePath = post.file || `${slug}/${slug}.md`;
       const postRes = await fetch(`../${filePath}`, { cache: "no-store" });

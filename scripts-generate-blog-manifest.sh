@@ -103,7 +103,8 @@ for path in "${root_md[@]}"; do
   base="${file%.md}"
   slug="$(slugify "$base")"
   target_dir="$BLOG_DIR/$slug"
-  target_path="$target_dir/$file"
+  target_file="$slug.md"
+  target_path="$target_dir/$target_file"
   mkdir -p "$target_dir"
 
   if [[ "$path" != "$target_path" ]]; then
@@ -121,6 +122,12 @@ count=0
 for path in "${folder_md[@]}"; do
   slug="$(basename "$(dirname "$path")")"
   file_name="$(basename "$path")"
+  target_file="$slug.md"
+  if [[ "$file_name" != "$target_file" ]]; then
+    mv "$path" "$BLOG_DIR/$slug/$target_file"
+    path="$BLOG_DIR/$slug/$target_file"
+    file_name="$target_file"
+  fi
   file_rel="$slug/$file_name"
   title=""
   description=""

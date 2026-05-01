@@ -1,0 +1,110 @@
+# HOW DOES WINDOWS AUTHENTICATION ACTUALLY WORK ?
+Every time we log into a Windows machine, or access a shared folder on the network, Windows runs an authentication process behind the scenes. It happens in milliseconds, and understanding it is the foundation of almost every AD attack.
+
+Windows uses two primary authentication protocols:
+1. **Kerberos**
+2. **NTLM**
+
+
+
+![[Pasted image 20260501173926.png]]
+
+---
+## Understanding the components involved. 
+
+### LSASS
+Local Security Authority Subsystem Service is the gatekeeper process which authenticates users, stores the credentials in memory and enforces policies. 
+
+### LSA
+Local Security Authority is the policy engine inside `LSASS`. It *talks* to SAM or AD to verify who you are.
+
+### SAM Database
+Security Accounts Manager stores local account hashes on every Windows Machine. It also enforces locally stored policies.
+
+### NTDS.dit
+It is the database for the Active Directory. It lives on Domain Controllers, and contains hashes for every domain account. 
+
+### KDC
+Key Distribution Center is the Kerberos ticket authority on every Domain Controller. It issues TGTs and Service tickets.
+
+### SPN
+Service Principal Name is a unique identifier for a service instance. Each service has one of these. These are useful since Kerberos can know which service you want a ticket for.
+
+---
+## NTLM Authentication
+
+Before authenticating user to anything, the most common way of knowing whether they are *authorized enough* to access it or not is the ... **password.** However, if passwords were exchanged so easily, then they can also be intercepted and stolen very easily. How do we make sure that you know the password without sending the password itself?
+Enter the `Challenge-Response` dance.
+
+Here's how the process works:
+1. `Client -> Server : NEGOTIATE`
+		The client says "I want to authenticate" and then sends its capabilities.
+		
+2. `Server -> Client : CHALLENGE`
+		The server responds with a random 8-byte nonce i.e. the "**challenge**".
+		
+3. `Client -> Server : AUTHENTICATE`
+		The client takes the *challenge*, hashes it with the user's NT hash(derived from the user's password) and sends back the result as the  "**response**"
+		
+4. `Server -> DC : VERIFY`
+		The server forwards everything to the Domain Controller. The DC looks up the user's hash, does some math, and compares the results.
+	
+5. `DC -> Server -> Client : RESULT`
+		If the hashes match, the access is granted. If not, then denied.
+
+In all of this process, the actual password is never discussed by either side.
+
+---
+## Kerberos
+
+Kerberos is the default authentication protocol for domain-joined machines. It is named after the three-headed dog guarding the underworld, which is fitting since our Kerberos also involves three parties: the client, the server and the KDC (Key Distribution Center).
+
+**Why Kerberos?**
+The idea behind kerberos is simple, and effective: You should only need the password once. After that, you won't require passwords, but instead you would use ***tickets***. Tickets prove who you are without re-hashing your credentials every single time. 
+
+You may think of it as cookies which helps make HTTP stateful(technically), from its default stateless feature. Only if it helps understanding though, as the working is not exactly similar.
+
+### Phase 1 : Getting your Ticket (Ticket Granting Ticket)
+1. `Client -> KDC : AS-REQ`
+		Client sends a request to the KDC's authentication service, with their username and a timestamp encrypted with their NT hash.
+		
+2. `KDC -> Client : AS-REP`
+		The KDC verifies if the user exists, decrypts the timestamps using the stored hash, and issues a TGT i.e. a ticket encrypted with the `krbtgt` account's hash. It also sends a session key.
+
+### Phase 2 : Getting a Service Ticket
+1. `Client -> KDC : TGS-REQ`
+		The client presents its **TGT** and says, "I want to talk to this service". The service is identified by SPN.
+		
+2. `KDC -> Client : TGS-REP`
+		The KDC verifies the TGT, the issues a Service Ticket which is encrypted with the service account's hash. It can only be decrypted by the service itself.
+
+### Phase 3 : Accessing the Service
+1. `Client -> Service : AP-REQ
+		Client presents the Service Ticket directly to the target service. 
+
+2. `Service -> Client : AP-REP`
+		Service decrypts the ticket with its own hash, verifies the client's identity and grants access.
+
+**Foreshadowing**
+If you can request a ticket for a service running under a user account, you can take that ticket offline and crack it. This is called `Kerberoasting`.
+
+
+---
+## Where do credentials live?
+
+Well, where do credentials live? They don't just appear and vanish during and after login. Credentials persists in memory, and on disks in several forms.
+
+1. `LSASS` 
+		After login, LSASS caches the credentials. (NT hashes, Kerberos tickets). In older version of windows, it also cached cleartext password.
+
+2. `SAM Hive`
+		It stores NT hashes for all local accounts. While running, the OS locks the SAM hives. However, it can be extracted via Volume Shadow Copies or by booting offline.
+
+3. `NTDS.dit`
+		It is the database for AD. It contains hashes for every domain user. It can be extracted too, using various tools and techniques.
+
+4. `SYSTEM Hive`
+		It contains the Boot Key, or the `SysKey` which is needed to decrypt SAM hashes. 
+
+
+  That's pretty much how that works.
