@@ -1,5 +1,6 @@
 import { ArrowLeft } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
@@ -10,6 +11,19 @@ import NotFound from './NotFound.jsx';
 export default function BlogPost() {
   const { slug } = useParams();
   const post = posts.find((item) => item.slug === slug);
+
+  useEffect(() => {
+    if (!post) {
+      document.title = '404Buddha | Security Researcher';
+      return undefined;
+    }
+
+    document.title = post.title;
+
+    return () => {
+      document.title = '404Buddha | Security Researcher';
+    };
+  }, [post]);
 
   if (!post) {
     return <NotFound />;

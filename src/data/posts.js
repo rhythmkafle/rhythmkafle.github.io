@@ -61,6 +61,10 @@ function readTimeFromContent(content) {
   return `${minutes} min read`;
 }
 
+function firstImageFromContent(content) {
+  return content.match(/!\[[^\]]*]\(([^)\s]+)(?:\s+"[^"]*")?\)/)?.[1];
+}
+
 export const posts = Object.entries(modules)
   .map(([path, raw]) => {
     const slug = slugFromPath(path);
@@ -74,6 +78,7 @@ export const posts = Object.entries(modules)
       category: attributes.category || 'Notes',
       date: attributes.date || 'Undated',
       readTime: attributes.readTime || readTimeFromContent(content),
+      image: attributes.image || firstImageFromContent(content),
       content
     };
   })
