@@ -32,7 +32,7 @@ Unlike the stack, the heap is for dynamic allocations of arbitrary size and life
 ### Heap Segment Memory
 A Windows heap a collection of segments, each of which is a large region subdivided into chunks. Every chunk carries a small header immediately before the user data pointer.
 
-![Heap_Layout](/public/blogs/Windows%20Memory%20Layout/2026-06-27_23-11.png)
+![Heap_Layout](/blogs/Windows%20Memory%20Layout/2026-06-27_23-11.png)
 
 ## TEB & PEB
 Two undocumented-but-critical data structures that sit in every process's user-mode address space are the Thread Environment Block (TEB) and the Process Environment Block (PEB). Both are filled in by the Windows loader and referenced constantly by `ntdll.dll`, the runtime, and Windows itself.
